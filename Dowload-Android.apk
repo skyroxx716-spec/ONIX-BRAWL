@@ -1,1 +1,598 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONIX BRAWL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background-color: #000;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, #00f0ff, #ff00f7, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            width: 260px;
+            padding: 15px;
+            background-color: #444;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 18px;
+            border: none;
+            user-select: none;
+        }
+
+        .btn:hover {
+            background-color: #666;
+            transform: scale(1.05);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+        }
+
+        /* MOD BUTTON */
+        #onixModBtn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border: 2px solid white;
+            background: transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        /* MOD PANEL */
+        .modPanel {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 999;
+            width: 320px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .modPanel.active {
+            display: block;
+        }
+
+        .modTitle {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .modOption {
+            background: #1a4a8a;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+        .modOption.active {
+            background: #1a8a3a;
+        }
+
+        .pageInfo {
+            color: white;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .navBtn {
+            background: #1a8a3a;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            margin: 3px 0;
+            user-select: none;
+            transition: 0.3s;
+            border: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .navBtn.inactive {
+            background: #1a4a8a;
+            cursor: default;
+        }
+
+        /* SUB PANELS */
+        .subPanel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.98);
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 1001;
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .subPanel.active {
+            display: block;
+        }
+
+        .subPanelHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .closeBtn {
+            color: red;
+            font-size: 22px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+        }
+
+        .subOption {
+            background: #1a4a8a;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+        .subOption.saved {
+            background: #1a8a3a;
+        }
+
+        .inputField {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #222;
+            border: 2px solid #444;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .saveBtn {
+            background: #1a8a3a;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            border: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .fpsDisplay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #9b59b6;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+            z-index: 998;
+        }
+
+        /* OVERLAY */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a8a3a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 2000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ONIX BRAWL</h1>
+
+    <div class="container">
+        <button class="btn download-android">Download Android</button>
+        <button class="btn">Direct Install (IOS)</button>
+        <button class="btn">Download Windows</button>
+        <button class="btn">Download for MacOS</button>
+    </div>
+
+    <footer>
+        Safe, Free — This is not a dangerous file, have nothing to fear, just enjoy the game.
+    </footer>
+
+    <!-- ONIX MOD BUTTON -->
+    <div id="onixModBtn">ONIX<br>MOD</div>
+
+    <!-- MOD PANEL - PAGE 1 -->
+    <div class="modPanel" id="modPanelPage1">
+        <div class="modTitle">ONIX MOD MENU</div>
+        <div class="pageInfo" id="pageInfo">Page 1/2</div>
+        
+        <div class="modOption" data-option="aimbot">AIMBOT</div>
+        <div class="modOption" data-option="autoDodge">AUTO DODGE</div>
+        <div class="modOption" data-option="autoCharge">AUTO CHARGE</div>
+        <div class="modOption" data-option="xray">X-RAY AUTOSHOOT</div>
+        <div class="modOption" data-option="killAura">KILL AURA</div>
+        <div class="modOption" data-option="settings">⚙ PARAMÈTRES</div>
+        
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="navBtn inactive" id="prevBtn" style="width: 50%;">Previous Page</button>
+            <button class="navBtn" id="nextBtn" style="width: 50%;">Next Page</button>
+        </div>
+    </div>
+
+    <!-- MOD PANEL - PAGE 2 -->
+    <div class="modPanel" id="modPanelPage2" style="display: none;">
+        <div class="modTitle">ONIX MOD MENU</div>
+        <div class="pageInfo">Page 2/2</div>
+        
+        <div class="modOption" data-option="spectator">SPECTATOR</div>
+        <div class="modOption" data-option="fpsBooster">FPS BOOSTER</div>
+        <div class="modOption" data-option="unlockAll">UNLOCK ALL</div>
+        <div class="modOption" data-option="fly">FLY</div>
+        <div class="modOption" data-option="noclip">NOCLIP</div>
+        
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="navBtn" id="prevBtn2" style="width: 50%;">Previous Page</button>
+            <button class="navBtn inactive" id="nextBtn2" style="width: 50%;">Next Page</button>
+        </div>
+    </div>
+
+    <!-- SUB PANELS -->
+    <!-- SPECTATOR PANEL -->
+    <div class="subPanel" id="spectatorPanel">
+        <div class="subPanelHeader">
+            <span>SPECTATOR</span>
+            <button class="closeBtn" data-close="spectatorPanel">✕</button>
+        </div>
+        <div class="subOption" id="setSpectatorBtn">SET SPECTATOR</div>
+        <div class="subOption" id="saveAllGamesBtn">SAVE FOR ALL GAMES</div>
+    </div>
+
+    <!-- SET SPECTATOR SUB PANEL -->
+    <div class="subPanel" id="setSpectatorSubPanel">
+        <div class="subPanelHeader">
+            <span>SPECTATOR</span>
+            <button class="closeBtn" data-close="setSpectatorSubPanel">✕</button>
+        </div>
+        <input type="number" class="inputField" id="spectatorCount" placeholder="Nombre de spectateurs" value="10000">
+        <button class="saveBtn" id="saveSpectatorBtn">SAVE</button>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="subPanel" id="settingsPanel">
+        <div class="subPanelHeader">
+            <span>SETTINGS</span>
+            <button class="closeBtn" data-close="settingsPanel">✕</button>
+        </div>
+        <div class="subOption" id="saveSettingsBtn">SAVE</div>
+        <div class="subOption" id="loadSettingsBtn">LOAD</div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- NOTIFICATION -->
+    <div class="notification" id="notification"></div>
+
+    <!-- FPS DISPLAY -->
+    <div class="fpsDisplay" id="fpsDisplay">FPS: 60</div>
+
+    <script>
+        // ============ DOWNLOAD ANDROID - Lien vers Brawl Stars Play Store ============
+        const downloadBtn = document.querySelector('.download-android');
+        downloadBtn.addEventListener('click', () => {
+            window.open('https://play.google.com/store/apps/details?id=com.supercell.brawlstars', '_blank');
+            showNotification('Téléchargement démarré');
+        });
+
+        // ============ ONIX MOD BUTTON ============
+        const onixModBtn = document.getElementById('onixModBtn');
+        const modPanelPage1 = document.getElementById('modPanelPage1');
+        const modPanelPage2 = document.getElementById('modPanelPage2');
+        const overlay = document.getElementById('overlay');
+
+        let currentPage = 1;
+
+        onixModBtn.addEventListener('click', () => {
+            if (currentPage === 1) {
+                togglePanel(modPanelPage1);
+            } else {
+                togglePanel(modPanelPage2);
+            }
+        });
+
+        function togglePanel(panel) {
+            const isActive = panel.classList.contains('active');
+            closeAllPanels();
+            if (!isActive) {
+                panel.classList.add('active');
+                overlay.classList.add('active');
+            }
+        }
+
+        // ============ PAGE NAVIGATION ============
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            modPanelPage1.classList.remove('active');
+            modPanelPage2.classList.add('active');
+            currentPage = 2;
+        });
+
+        document.getElementById('prevBtn2').addEventListener('click', () => {
+            modPanelPage2.classList.remove('active');
+            modPanelPage1.classList.add('active');
+            currentPage = 1;
+        });
+
+        // ============ MOD OPTIONS TOGGLE ============
+        const modOptions = document.querySelectorAll('.modOption');
+        modOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const optionType = this.dataset.option;
+                
+                // Options normales avec toggle
+                const toggleOptions = ['aimbot', 'autoDodge', 'autoCharge', 'xray', 'killAura', 'fly', 'noclip'];
+                if (toggleOptions.includes(optionType)) {
+                    this.classList.toggle('active');
+                }
+                
+                // Options spéciales
+                if (optionType === 'settings') {
+                    openSubPanel('settingsPanel');
+                }
+                if (optionType === 'spectator') {
+                    openSubPanel('spectatorPanel');
+                }
+                if (optionType === 'fpsBooster') {
+                    this.classList.toggle('active');
+                    const fpsDisplay = document.getElementById('fpsDisplay');
+                    if (this.classList.contains('active')) {
+                        fpsDisplay.style.display = 'block';
+                        startFPSCounter();
+                    } else {
+                        fpsDisplay.style.display = 'none';
+                        stopFPSCounter();
+                    }
+                }
+                if (optionType === 'unlockAll') {
+                    if (confirm('Relancer Brawl Stars avec tout débloqué ?')) {
+                        showNotification('Tout est débloqué ! 10000 gemmes, tous les brawleurs maxés');
+                    }
+                }
+            });
+        });
+
+        // ============ SUB PANELS ============
+        function openSubPanel(panelId) {
+            closeAllSubPanels();
+            document.getElementById(panelId).classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function closeAllSubPanels() {
+            document.querySelectorAll('.subPanel').forEach(p => p.classList.remove('active'));
+        }
+
+        function closeAllPanels() {
+            modPanelPage1.classList.remove('active');
+            modPanelPage2.classList.remove('active');
+            closeAllSubPanels();
+            overlay.classList.remove('active');
+        }
+
+        // Close buttons
+        document.querySelectorAll('.closeBtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const panelId = this.dataset.close;
+                document.getElementById(panelId).classList.remove('active');
+                // Check if any subPanel is still open
+                const anyOpen = document.querySelectorAll('.subPanel.active').length > 0;
+                if (!anyOpen) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Overlay click
+        overlay.addEventListener('click', () => {
+            closeAllPanels();
+        });
+
+        // ============ SPECTATOR ============
+        document.getElementById('setSpectatorBtn').addEventListener('click', () => {
+            openSubPanel('setSpectatorSubPanel');
+        });
+
+        let savedSpectatorCount = 10000;
+        let saveAllGamesActive = false;
+
+        document.getElementById('saveSpectatorBtn').addEventListener('click', () => {
+            const count = document.getElementById('spectatorCount').value;
+            savedSpectatorCount = count;
+            showNotification(`Saved! ${count} spectateurs`);
+            document.getElementById('setSpectatorSubPanel').classList.remove('active');
+            if (saveAllGamesActive) {
+                showNotification(`${count} spectateurs pour toutes les games`);
+            }
+        });
+
+        document.getElementById('saveAllGamesBtn').addEventListener('click', function() {
+            saveAllGamesActive = !saveAllGamesActive;
+            if (saveAllGamesActive) {
+                this.classList.add('saved');
+                showNotification('SAVE FOR ALL GAMES activé');
+            } else {
+                this.classList.remove('saved');
+                showNotification('SAVE FOR ALL GAMES désactivé');
+            }
+        });
+
+        // ============ SETTINGS ============
+        let savedConfig = null;
+
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            // Save current state
+            const activeOptions = [];
+            document.querySelectorAll('.modOption.active').forEach(opt => {
+                activeOptions.push(opt.dataset.option);
+            });
+            savedConfig = {
+                activeOptions: activeOptions,
+                spectatorCount: savedSpectatorCount,
+                saveAllGames: saveAllGamesActive
+            };
+            showNotification('Saved!');
+        });
+
+        document.getElementById('loadSettingsBtn').addEventListener('click', () => {
+            if (savedConfig) {
+                // Reset all
+                document.querySelectorAll('.modOption').forEach(opt => opt.classList.remove('active'));
+                document.getElementById('saveAllGamesBtn').classList.remove('saved');
+                // Load saved
+                savedConfig.activeOptions.forEach(option => {
+                    const opt = document.querySelector(`.modOption[data-option="${option}"]`);
+                    if (opt) opt.classList.add('active');
+                });
+                savedSpectatorCount = savedConfig.spectatorCount;
+                saveAllGamesActive = savedConfig.saveAllGames;
+                if (saveAllGamesActive) {
+                    document.getElementById('saveAllGamesBtn').classList.add('saved');
+                }
+                document.getElementById('spectatorCount').value = savedSpectatorCount;
+                showNotification('Loaded!');
+            } else {
+                showNotification('Aucune sauvegarde');
+            }
+        });
+
+        // ============ FPS COUNTER ============
+        let fpsInterval;
+        function startFPSCounter() {
+            let fps = 60;
+            const fpsDisplay = document.getElementById('fpsDisplay');
+            fpsInterval = setInterval(() => {
+                fps = Math.floor(Math.random() * 30) + 90; // Simule 90-120 FPS
+                fpsDisplay.textContent = 'FPS: ' + fps;
+            }, 1000);
+        }
+
+        function stopFPSCounter() {
+            clearInterval(fpsInterval);
+        }
+
+        // ============ NOTIFICATION ============
+        function showNotification(message) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.style.display = 'block';
+            setTimeout(() => {
+                notif.style.display = 'none';
+            }, 2000);
+        }
+
+        // ============ KEYBOARD SHORTCUT ============
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllPanels();
+            }
+        });
+    </script>
+
+</body>
+</html>
